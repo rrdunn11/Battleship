@@ -1,29 +1,29 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var socket = require('socket.io');
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 // var items = require('../database-mysql');
 // var items = require('../database-mongo');
-
+var {playerBoard, opponentBoard} = require('./boardStates.js');
 var app = express();
 
-// UNCOMMENT FOR REACT
-// app.use(express.static(__dirname + '/../react-client/dist'));
+app.use(bodyParser.json());
+app.use(express.static(__dirname + '/../react-client/dist'));
 
-// UNCOMMENT FOR ANGULAR
-// app.use(express.static(__dirname + '/../angular-client'));
-// app.use(express.static(__dirname + '/../node_modules'));
-
-app.get('/items', function (req, res) {
-  items.selectAll(function(err, data) {
-    if(err) {
-      res.sendStatus(500);
-    } else {
-      res.json(data);
-    }
-  });
+app.get('/board', function (req, res) {
+  res.status(200).json({playerBoard, opponentBoard});
 });
 
-app.listen(3000, function() {
+app.put('/board', function (req, res) {
+  
+});
+
+var server = app.listen(3000, function() {
   console.log('listening on port 3000!');
 });
+var io = socket(server);
+
+io.on('connection', function(socket) {
+  console.log('Connected', socket.id);
+})
 

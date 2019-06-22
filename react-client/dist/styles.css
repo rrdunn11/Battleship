@@ -1,0 +1,33 @@
+.board {
+  display: flex;
+  flex-direction: column;
+}
+
+#playerBoard {
+  display: flex;
+  flex-direction: row;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  height: 50px;
+  width: 50px;
+  border: 1px solid black;
+}
+
+.cell:hover {
+  background-color: red;
+}
+
+.rowHeader {
+  height: 50px;
+  width: 50px;
+}
+
+.ship {
+  border: solid 1px black;
+}
