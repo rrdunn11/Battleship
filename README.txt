@@ -26,15 +26,15 @@ Client:
 Server:
   Store the state of the two boards
   Player board:
-    * Ocean / 0
-    * Ship (active) / 1
-    * Ship (hit) / 2
-    * Miss / 3
+    * Ocean / A
+    * Ship (active) / B
+    * Ship (hit) / C
+    * Miss / D
     
   Oppontent board:
-    * Unknown / 0
-    * Ship (hit) / 2
-    * Miss / 3
+    * Unknown / A
+    * Ship (hit) / C
+    * Miss / D
   
   Server can filter the information that is sent to the client depending on the Player #.
 Database:

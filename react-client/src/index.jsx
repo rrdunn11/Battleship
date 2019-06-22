@@ -1,15 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import $ from 'jquery';
-import axios from 'axios';
 import PlayerBoard from './components/PlayerBoard.jsx';
 import OpponentBoard from './components/OpponentBoard.jsx';
+import StartingScreen from './components/StartingScreen.jsx';
 var socket = io.connect('http://localhost:3000');
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
+      username: null,
+      player: null,
+      turn: null,
+      roomID: null,
       playerBoard:[],
       opponentBoard: [],
       ships: [{
@@ -41,44 +44,95 @@ class App extends React.Component {
     gameStatus: 0
     }
     this.setShipAtApp = this.setShipAtApp.bind(this);
-    this.toggleNextGameState = this.toggleNextGameState.bind(this);
+    this.setPlayerShips = this.setPlayerShips.bind(this);
+    this.onNewGameClick = this.onNewGameClick.bind(this);
+    this.onJoinGameClick = this.onJoinGameClick.bind(this);
+    this.targetOpponent = this.targetOpponent.bind(this);
   }
 
   componentDidMount() {
-    this.setState({
-      playerBoard: [
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']
-      ],
-      opponentBoard: [
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
-        ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A']
-      ]
+    socket.on('newGame', (data) => {
+      console.log(data);
+      this.setState({
+        username: data.username,
+        player: 'P1',
+        turn: true,
+        gameStatus: this.state.gameStatus + 1,
+        playerBoard: data.board,
+        roomID: data.room
+      });
     });
-    // axios.get('/board')
-    // .then(response => {
-    //   console.log(response)
-    //   this.setState({
-    //     playerBoard: response.data.playerBoard,
-    //     opponentBoard: response.data.opponentBoard
-    //   })
-    // })
+  
+    socket.on('P1', (data) => {
+      console.log(data);
+    })
+  
+    socket.on('P2', (data) => {
+      this.setState({
+        username: data.username,
+        player: 'P2',
+        turn: false,
+        gameStatus: 1,
+        playerBoard: data.board,
+        roomID: data.room
+      });
+    });
+
+    socket.on('setPlayerBoard', (data) => {
+      this.setState({
+        playerBoard: data.board,
+        gameStatus: this.state.gameStatus + 1
+      });
+    });
+  
+    socket.on('setOpponentBoard', (data) => {
+      this.setState({
+        opponentBoard: data.board,
+      });
+    });
+
+    socket.on('turnPlayedPlayer', (data) => {
+      this.setState({
+        opponentBoard: data.board,
+        turn: !this.state.turn
+      });
+    });
+
+    socket.on('turnPlayedOpponent', (data) => {
+      console.log('hi', data.board)
+      this.setState({
+        playerBoard: data.board,
+        turn: !this.state.turn
+      });
+    });
+
+    socket.on('err', (data) => {
+      console.log(data);
+    });
+  }
+
+  onNewGameClick(e) {
+    e.preventDefault();
+    let username = document.getElementById("usernameP1").value;
+    if (username) {
+      console.log(username)
+      socket.emit('createGame', {username});
+    } else {
+      alert('Please enter a username!');
+    }
+  }
+
+  
+
+  onJoinGameClick(e) {
+    e.preventDefault();
+    let username = document.getElementById("usernameP2").value;
+    let roomID = document.getElementById("roomID").value;
+    if (username && roomID) {
+      socket.emit('joinGame', {username, roomID});
+    } else {
+      alert('Please enter a username and roomID!')
+    }
   }
 
   setShipAtApp(rowNumb, colNumb, idx, shipHorizontal) {
@@ -132,19 +186,44 @@ class App extends React.Component {
     return true;
   }
 
-  toggleNextGameState(e) {
+  setPlayerShips(e) {
     e.preventDefault();
-    this.setState({
-      gameStatus: this.state.gameStatus + 1
+    socket.emit('setShips', {
+      player: this.state.player, 
+      room: this.state.roomID, 
+      playerBoard: this.state.playerBoard
     });
+  }
+
+  targetOpponent(e, row, col) {
+    e.preventDefault();
+    console.log(row, col);
+    if (this.state.turn) {
+      socket.emit('playTurn', {
+        row, 
+        col, 
+        player: this.state.player, 
+        room: this.state.roomID
+      });
+    } else {
+      alert('Not your turn!');
+    }
   }
 
   render () {
     let display;
     if (this.state.gameStatus === 0) {
       display = (
+        <StartingScreen 
+          onNewGameClick={this.onNewGameClick}
+          onJoinGameClick={this.onJoinGameClick}
+        />
+      )
+    } else if (this.state.gameStatus === 1) {
+      display = (
         <div>
           <h2>Your Board</h2>
+          <button onClick={(e) => this.setPlayerShips(e)} >Set board!</button>
           <PlayerBoard 
             playerBoard={this.state.playerBoard}
             setShipAtApp={this.setShipAtApp}
@@ -152,7 +231,7 @@ class App extends React.Component {
           />
         </div>
       ) 
-    } else if (this.state.gameStatus === 1) {
+    } else if (this.state.gameStatus === 2) {
       display = (
         <div>
           <h2>Your Board</h2>
@@ -164,17 +243,20 @@ class App extends React.Component {
           <h2> Your Opponent's Board</h2>
           <OpponentBoard 
             opponentBoard={this.state.opponentBoard}
+            targetOpponent={this.targetOpponent}
           />
         </div>
       )
     }
     return (<div>
       <h1>Battleship!</h1>
-      <button onClick={(e) => this.toggleNextGameState(e)} >Start Game!</button>
+      <div>Username: {this.state.username}</div>
+      <div>Player: {this.state.player}</div>
+      <div>Room: {this.state.roomID}</div>
+      <div>Turn: {""+this.state.turn}</div>
       {display}
     </div>)
   }
 }
 
 ReactDOM.render(<App />, document.getElementById('app'));
-

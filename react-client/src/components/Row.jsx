@@ -16,6 +16,7 @@ class Row extends React.Component {
             rowNumb={this.props.rowNumb} 
             colNumb={colNumb} 
             onPlayerShipSet = {this.props.onPlayerShipSet}
+            targetOpponent={this.props.targetOpponent}
             key={"cell"+colNumb}
           />)
         })}

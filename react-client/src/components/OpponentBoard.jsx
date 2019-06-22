@@ -12,6 +12,7 @@ class OpponentBoard extends React.Component {
         <div id="targetingGrid" className="board">
           <Board 
             board={this.props.opponentBoard}
+            targetOpponent={this.props.targetOpponent}
           />
 
         </div>
