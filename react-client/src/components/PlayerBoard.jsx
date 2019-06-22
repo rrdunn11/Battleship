@@ -1,52 +1,59 @@
 import React from 'react';
-import Row from './Row.jsx';
+import Board from './Board.jsx';
 import Ships from './Ships.jsx';
 
 class PlayerBoard extends React.Component {
   constructor(props) {
     super(props);
     this.state ={
-      selectedShip: 0,
+      selectedShip: null,
       shipHorizontal: true
     };
     this.onPlayerShipClick = this.onPlayerShipClick.bind(this);
     this.onPlayerShipSet = this.onPlayerShipSet.bind(this);
+    this.changeShipDirection = this.changeShipDirection.bind(this);
   }
 
-  onPlayerShipClick(e, length) {
+  onPlayerShipClick(e, idx) {
     e.preventDefault();
-    console.log(length);
-    this.setState({
-      selectedShip: length
-    });
+    if (this.props.ships[idx].set === 0) {
+      alert('Ship is already placed!')
+    } else {
+      this.setState({
+        selectedShip: idx
+      });
+    }
   }
 
   onPlayerShipSet(e, rowNumb, colNumb) {
     e.preventDefault();
-    console.log(rowNumb, colNumb);
+    this.props.setShipAtApp(rowNumb, colNumb, this.state.selectedShip, this.state.shipHorizontal);
   }
 
   changeShipDirection(e) {
-
+    e.preventDefault();
+    this.setState({
+      shipHorizontal: !this.state.shipHorizontal
+    });
   }
-  
+
   render() {
     return (
-      <div id="playerBoard">
-        <div id="oceanGrid" className="board">
-          {this.props.playerBoard.map((row, rowNumb) => {
-            return (<Row 
-              row={row} 
-              rowNumb={rowNumb} 
-              onPlayerShipSet={this.onPlayerShipSet} 
-              key={"row"+rowNumb}
-            />)
-          })}
+
+        <div id="playerBoard">
+          <Board 
+            board={this.props.playerBoard}
+            onPlayerShipSet={this.onPlayerShipSet}
+          />
+          <div id="pieces">
+            <Ships 
+              onPlayerShipClick={this.onPlayerShipClick}
+              changeShipDirection={this.changeShipDirection}
+              ships={this.props.ships}
+            />
+          </div>
         </div>
-        <div id="pieces">
-          <Ships onPlayerShipClick={this.onPlayerShipClick}/>
-        </div>
-      </div>
+
     )
   }
 }

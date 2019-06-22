@@ -9,7 +9,7 @@ class Row extends React.Component {
   render() {
     return (
       <div className="row">
-        <div className="rowHeader">{this.props.rowNumb}</div>
+        <div className="rowHeader"><span>{this.props.rowNumb}</span></div>
         {this.props.row.map((cell, colNumb) => {
           return (<Cell 
             cell={cell} 

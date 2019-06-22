@@ -23,11 +23,22 @@
   background-color: red;
 }
 
-.rowHeader {
-  height: 50px;
-  width: 50px;
+.rowHeader, .colHeader {
+  height: 52px;
+  width: 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .ship {
   border: solid 1px black;
+}
+
+.A {
+  background-color:lightblue;
+}
+
+.B {
+  background-color: grey;
 }

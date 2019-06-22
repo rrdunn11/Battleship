@@ -1,13 +1,17 @@
 import React from 'react';
+import Ship from './Ship.jsx';
 
-const Ships = ({onPlayerShipClick}) => (
+const Ships = ({ships, onPlayerShipClick, changeShipDirection}) => (
   <div id="ships">
-    <p className="ship" onClick={(e) => onPlayerShipClick(e, 5)}>Carrier</p>
-    <p className="ship" onClick={(e) => onPlayerShipClick(e, 4)}>Battleship</p>
-    <p className="ship" onClick={(e) => onPlayerShipClick(e, 3)}>Cruiser</p>
-    <p className="ship" onClick={(e) => onPlayerShipClick(e, 3)}>Submarine</p>
-    <p className="ship" onClick={(e) => onPlayerShipClick(e, 2)}>Destroyer</p>
-    <button>Change ship direction</button>
+    {ships.map((ship, i) => {
+      return (<Ship 
+        ship={ship}
+        onPlayerShipClick={onPlayerShipClick}
+        i={i}
+        key={"ship"+i}
+      />)
+    })}
+    <button onClick={(e) => changeShipDirection(e)}>Change ship direction</button>
   </div>
 )
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import Row from './Row.jsx';
+import Board from './Board.jsx';
 
 class OpponentBoard extends React.Component {
   constructor(props) {
@@ -10,6 +10,9 @@ class OpponentBoard extends React.Component {
     return (
       <div id="opponentBoard">
         <div id="targetingGrid" className="board">
+          <Board 
+            board={this.props.opponentBoard}
+          />
 
         </div>
       </div>
