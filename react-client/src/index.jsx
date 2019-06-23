@@ -150,11 +150,11 @@ class App extends React.Component {
     } else if (this.checkIfValidShipPlacement(rowNumb, colNumb, ship, shipHorizontal)) {
       if (shipHorizontal ) {
         for (let i = 0; i < ship.length; i++) {
-          playerBoardCopy[rowNumb][colNumb+i] = 'B';
+          playerBoardCopy[rowNumb][colNumb+i] = ship.name;
         }
       } else {
         for (let i = 0; i < ship.length; i++) {
-          playerBoardCopy[rowNumb+i][colNumb] = 'B';
+          playerBoardCopy[rowNumb+i][colNumb] = ship.name;
         }
       } 
       let shipsCopy = this.state.ships.slice();

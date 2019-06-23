@@ -105,8 +105,8 @@ io.on('connection', function(socket) {
     }
 
     //Determine whether a ship has been hit
-    if (gameState[data.room][opponent][row][col] === 'B') {
-      gameState[data.room][opponent][row][col] ='C';
+    if (gameState[data.room][opponent][row][col].length > 1) {
+      gameState[data.room][opponent][row][col] += ' hit';
     } else {
       gameState[data.room][opponent][row][col] ='D';
     }
@@ -118,7 +118,7 @@ io.on('connection', function(socket) {
     let shipCellsLeft = 0;
     for (let i = 0; i < opponentBoard.length; i++) {
       for (let j = 0; j < opponentBoard[i].length; j++) {
-        if (opponentBoard[i][j] === 'B') {
+        if (opponentBoard[i][j].length > 1 && !opponentBoard[i][j].match('hit')) {
           shipCellsLeft++;
         } 
       }
@@ -144,7 +144,7 @@ const filterOpponentBoard = (opponentBoard) => {
   for (let i = 0; i < opponentBoard.length; i++) {
     let temp = [];
     for (let j = 0; j < opponentBoard[i].length; j++) {
-      if (opponentBoard[i][j] === 'B') {
+      if (opponentBoard[i][j].length > 1 && !opponentBoard[i][j].match('hit')) {
         temp.push('A');
       } else {
         temp.push(opponentBoard[i][j]);
