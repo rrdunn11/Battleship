@@ -52,6 +52,7 @@ class PlayerBoard extends React.Component {
               changeShipDirection={this.changeShipDirection}
               ships={this.props.ships}
               selectedShip={this.state.selectedShip}
+              shipHorizontal={this.state.shipHorizontal}
             />
           </div>
         </div>

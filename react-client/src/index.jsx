@@ -16,27 +16,27 @@ class App extends React.Component {
       playerBoard:[],
       opponentBoard: [],
       ships: [{
-        name: "Carrier",
+        name: "Carrier (5)",
         length: 5,
         set: 1
       },
       {
-        name: "Battleship",
+        name: "Battleship (4)",
         length: 4,
         set: 1
       },
       {
-        name: "Cruiser",
+        name: "Cruiser (3)",
         length: 3,
         set: 1
       },
       {
-        name: "Submarine",
+        name: "Submarine (3)",
         length: 3,
         set: 1
       },
       {
-        name: "Destroyer",
+        name: "Destroyer (2)",
         length: 2,
         set: 1
       }

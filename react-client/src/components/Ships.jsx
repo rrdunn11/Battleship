@@ -1,7 +1,7 @@
 import React from 'react';
 import Ship from './Ship.jsx';
 
-const Ships = ({ships, onPlayerShipClick, changeShipDirection, selectedShip}) => (
+const Ships = ({ships, onPlayerShipClick, changeShipDirection, selectedShip, shipHorizontal}) => (
   <div id="ships">
     {ships.map((ship, i) => {
       return (<Ship 
@@ -13,6 +13,7 @@ const Ships = ({ships, onPlayerShipClick, changeShipDirection, selectedShip}) =>
       />)
     })}
     <button onClick={(e) => changeShipDirection(e)}>Change ship direction</button>
+    <div>Ship will be: {shipHorizontal === true ? 'horizontal' : 'vertical'}</div>
   </div>
 )
 
