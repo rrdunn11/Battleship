@@ -35,6 +35,14 @@
   border: solid 1px black;
 }
 
+.set1 {
+
+}
+
+.set0 {
+  text-decoration: line-through;
+}
+
 .A {
   background-color:lightblue;
 }

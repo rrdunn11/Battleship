@@ -4,18 +4,19 @@ var socket = require('socket.io');
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 // var items = require('../database-mysql');
 // var items = require('../database-mongo');
-var {gameState} = require('./boardStates.js');
-var app = express();
+// var {gameState} = require('./boardStates.js');
+const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/../react-client/dist'));
 
-var server = app.listen(3000, function() {
+const server = app.listen(3000, function() {
   console.log('listening on port 3000!');
 });
 
-var io = socket(server);
-var rooms = 0;
+const io = socket(server);
+let rooms = 0;
+const gameState = {}
 
 io.on('connection', function(socket) {
   console.log('Connected', socket.id);
