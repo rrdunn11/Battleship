@@ -7,7 +7,7 @@ const Cell = ({cell, rowNumb, colNumb, onPlayerShipSet, targetOpponent, gameStat
     id={`${rowNumb}, ${colNumb}`}
     onClick={gameStatus === 1 ? (e) => onPlayerShipSet(e, rowNumb, colNumb) : onPlayerShipSet ? null : (e) => targetOpponent(e, rowNumb, colNumb)}
     >
-    {cell}
+    {cell.length > 1 ? cell : null}
   </div>
 )
 
