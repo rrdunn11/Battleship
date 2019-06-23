@@ -44,12 +44,14 @@ class PlayerBoard extends React.Component {
           <Board 
             board={this.props.playerBoard}
             onPlayerShipSet={this.onPlayerShipSet}
+            gameStatus={this.props.gameStatus}
           />
           <div id="pieces">
             <Ships 
               onPlayerShipClick={this.onPlayerShipClick}
               changeShipDirection={this.changeShipDirection}
               ships={this.props.ships}
+              selectedShip={this.state.selectedShip}
             />
           </div>
         </div>

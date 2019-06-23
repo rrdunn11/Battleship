@@ -1,12 +1,13 @@
 import React from 'react';
 import Ship from './Ship.jsx';
 
-const Ships = ({ships, onPlayerShipClick, changeShipDirection}) => (
+const Ships = ({ships, onPlayerShipClick, changeShipDirection, selectedShip}) => (
   <div id="ships">
     {ships.map((ship, i) => {
       return (<Ship 
         ship={ship}
         onPlayerShipClick={onPlayerShipClick}
+        selectedShip={selectedShip}
         i={i}
         key={"ship"+i}
       />)

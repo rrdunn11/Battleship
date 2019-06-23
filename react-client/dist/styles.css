@@ -58,3 +58,7 @@
 .D {
   background-color: white;
 }
+
+.selectedShiptrue {
+  font-weight: bold;
+}

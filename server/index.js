@@ -4,7 +4,6 @@ var socket = require('socket.io');
 // UNCOMMENT THE DATABASE YOU'D LIKE TO USE
 // var items = require('../database-mysql');
 // var items = require('../database-mongo');
-// var {gameState} = require('./boardStates.js');
 const app = express();
 
 app.use(bodyParser.json());
@@ -25,6 +24,9 @@ io.on('connection', function(socket) {
     console.log('User disconnected');
   });
   
+  //increment room count, set up and join room, create game state for P1
+  //data is an object with username property
+  //return username, roomID, and empty board to P1
   socket.on('createGame', function(data) {
     rooms++;
     socket.join('room-' + rooms);
@@ -46,10 +48,12 @@ io.on('connection', function(socket) {
       room: 'room-'+rooms, 
       board: gameState['room-' + rooms]['P1']
     });
-    });
-    
-    socket.on('joinGame', function(data) {
-      var room = io.nsps['/'].adapter.rooms[data.roomID];
+  });
+  
+  //P2 joins a game
+  //data consists of username and roomID
+  socket.on('joinGame', function(data) {
+    var room = io.nsps['/'].adapter.rooms[data.roomID];
     if (room && room.length === 1) {
       socket.join(data.roomID);
       gameState[data.roomID]['P2'] = [
@@ -75,6 +79,8 @@ io.on('connection', function(socket) {
     }
   });
 
+  //Save boards to server memory
+  //data consists of player's board, role, and room
   socket.on('setShips', (data) => {
     gameState[data.room][data.player] = data.playerBoard;
     let opponentBoardCopy = filterOpponentBoard(gameState[data.room][data.player]);
@@ -86,6 +92,7 @@ io.on('connection', function(socket) {
     })
   });
 
+  //data consists of row, col, player, and room
   socket.on('playTurn', (data) => {
     let row = data.row;
     let col = data.col;
@@ -97,6 +104,7 @@ io.on('connection', function(socket) {
       opponent = 'P1';
     }
 
+    //Determine whether a ship has been hit
     if (gameState[data.room][opponent][row][col] === 'B') {
       gameState[data.room][opponent][row][col] ='C';
     } else {
@@ -106,6 +114,7 @@ io.on('connection', function(socket) {
     let opponentBoard = gameState[data.room][opponent];
     
     let opponentBoardCopy = filterOpponentBoard(opponentBoard);
+    //check number of ships left; if 0, then we can declare victory!
     let shipCellsLeft = 0;
     for (let i = 0; i < opponentBoard.length; i++) {
       for (let j = 0; j < opponentBoard[i].length; j++) {
@@ -114,22 +123,22 @@ io.on('connection', function(socket) {
         } 
       }
     }
-    if (shipCellsLeft === 0) {
-      io.in(data.room).emit('winner', {player});
-    } else {
-      //send original board to opponent after turn
-      socket.broadcast.to(data.room).emit('turnPlayedOpponent', {
-        board: gameState[data.room][opponent]
-      });
-      //send filtered board to player after turn
-      socket.emit('turnPlayedPlayer', {
-        board: opponentBoardCopy
-      })
-    }
+
+    //send original board to opponent after turn
+    socket.broadcast.to(data.room).emit('turnPlayedOpponent', {
+      board: gameState[data.room][opponent],
+      winner: shipCellsLeft === 0
+    });
+    //send filtered board to player after turn
+    socket.emit('turnPlayedPlayer', {
+      board: opponentBoardCopy,
+      winner: shipCellsLeft === 0
+    });
   });
 
 });
 
+//Remove ships before sending board to the enemy
 const filterOpponentBoard = (opponentBoard) => {
   let opponentBoardCopy = [];
   for (let i = 0; i < opponentBoard.length; i++) {

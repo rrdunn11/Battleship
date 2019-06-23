@@ -22,6 +22,7 @@ class Board extends React.Component{
             rowNumb={rowNumb} 
             onPlayerShipSet={this.props.onPlayerShipSet} 
             targetOpponent={this.props.targetOpponent}
+            gameStatus={this.props.gameStatus}
             key={"row"+rowNumb}
           />)
         })}

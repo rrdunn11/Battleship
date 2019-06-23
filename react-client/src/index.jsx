@@ -96,6 +96,9 @@ class App extends React.Component {
         opponentBoard: data.board,
         turn: !this.state.turn
       });
+      if (data.winner) {
+        alert(`You are the winner!`);
+      }
     });
 
     socket.on('turnPlayedOpponent', (data) => {
@@ -103,10 +106,9 @@ class App extends React.Component {
         playerBoard: data.board,
         turn: !this.state.turn
       });
-    });
-
-    socket.on('winner', (data) => {
-      alert(`${data.player} is the winner!`)
+      if (data.winner) {
+        alert(`Your opponent is the winner!`);
+      }
     });
 
     socket.on('err', (data) => {
@@ -197,15 +199,15 @@ class App extends React.Component {
         shipsNotSet++;
       }
     }
-    if (shipsNotSet === 0) {
+    // if (shipsNotSet === 0) {
       socket.emit('setShips', {
         player: this.state.player, 
         room: this.state.roomID, 
         playerBoard: this.state.playerBoard
       });
-    } else {
-      alert('Please set all ships!');
-    }
+    // } else {
+    //   alert('Please set all ships!');
+    // }
   }
 
   targetOpponent(e, row, col) {
@@ -240,6 +242,7 @@ class App extends React.Component {
             playerBoard={this.state.playerBoard}
             setShipAtApp={this.setShipAtApp}
             ships={this.state.ships}
+            gameStatus={this.state.gameStatus}
           />
         </div>
       ) 
@@ -251,6 +254,7 @@ class App extends React.Component {
             playerBoard={this.state.playerBoard}
             setShipAtApp={this.setShipAtApp}
             ships={this.state.ships}
+            gameStatus={this.state.gameStatus}
           />
           <h2> Your Opponent's Board</h2>
           <OpponentBoard 
