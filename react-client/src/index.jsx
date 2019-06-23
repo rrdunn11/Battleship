@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import PlayerBoard from './components/PlayerBoard.jsx';
 import OpponentBoard from './components/OpponentBoard.jsx';
 import StartingScreen from './components/StartingScreen.jsx';
-var socket = io.connect('http://localhost:3000');
+const socket = io.connect(window.location.origin);
 
 class App extends React.Component {
   constructor(props) {
@@ -99,11 +99,14 @@ class App extends React.Component {
     });
 
     socket.on('turnPlayedOpponent', (data) => {
-      console.log('hi', data.board)
       this.setState({
         playerBoard: data.board,
         turn: !this.state.turn
       });
+    });
+
+    socket.on('winner', (data) => {
+      alert(`${data.player} is the winner!`)
     });
 
     socket.on('err', (data) => {
@@ -188,16 +191,25 @@ class App extends React.Component {
 
   setPlayerShips(e) {
     e.preventDefault();
-    socket.emit('setShips', {
-      player: this.state.player, 
-      room: this.state.roomID, 
-      playerBoard: this.state.playerBoard
-    });
+    let shipsNotSet = 0;
+    for (let i = 0; i < this.state.ships.length; i++) {
+      if (this.state.ships[i].set !== 0) {
+        shipsNotSet++;
+      }
+    }
+    if (shipsNotSet === 0) {
+      socket.emit('setShips', {
+        player: this.state.player, 
+        room: this.state.roomID, 
+        playerBoard: this.state.playerBoard
+      });
+    } else {
+      alert('Please set all ships!');
+    }
   }
 
   targetOpponent(e, row, col) {
     e.preventDefault();
-    console.log(row, col);
     if (this.state.turn) {
       socket.emit('playTurn', {
         row, 
@@ -247,15 +259,18 @@ class App extends React.Component {
           />
         </div>
       )
-    }
-    return (<div>
-      <h1>Battleship!</h1>
-      <div>Username: {this.state.username}</div>
-      <div>Player: {this.state.player}</div>
-      <div>Room: {this.state.roomID}</div>
-      <div>Turn: {""+this.state.turn}</div>
-      {display}
-    </div>)
+    } 
+
+    return (
+      <div>
+        <h1>Battleship!</h1>
+        <div>Username: {this.state.username}</div>
+        <div>Player: {this.state.player}</div>
+        <div>Room: {this.state.roomID}</div>
+        <div>Turn: {""+this.state.turn}</div>
+        {display}
+      </div>
+    )
   }
 }
 

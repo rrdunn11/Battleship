@@ -15,14 +15,15 @@ var server = app.listen(3000, function() {
 });
 
 var io = socket(server);
-var rooms = 1;
+var rooms = 0;
+
 io.on('connection', function(socket) {
   console.log('Connected', socket.id);
 
   socket.on('disconnect', function() {
     console.log('User disconnected');
   });
-
+  
   socket.on('createGame', function(data) {
     rooms++;
     socket.join('room-' + rooms);
@@ -42,11 +43,12 @@ io.on('connection', function(socket) {
     socket.emit('newGame', {
       username: data.username, 
       room: 'room-'+rooms, 
-      board: gameState['room-' + rooms]['P1']});
-  });
-
-  socket.on('joinGame', function(data) {
-    var room = io.nsps['/'].adapter.rooms[data.roomID];
+      board: gameState['room-' + rooms]['P1']
+    });
+    });
+    
+    socket.on('joinGame', function(data) {
+      var room = io.nsps['/'].adapter.rooms[data.roomID];
     if (room && room.length === 1) {
       socket.join(data.roomID);
       gameState[data.roomID]['P2'] = [
@@ -74,11 +76,12 @@ io.on('connection', function(socket) {
 
   socket.on('setShips', (data) => {
     gameState[data.room][data.player] = data.playerBoard;
+    let opponentBoardCopy = filterOpponentBoard(gameState[data.room][data.player]);
     socket.emit('setPlayerBoard', {
       board: gameState[data.room][data.player]
     });
     socket.broadcast.to(data.room).emit('setOpponentBoard', {
-      board: gameState[data.room][data.player]
+      board: opponentBoardCopy
     })
   });
 
@@ -99,24 +102,45 @@ io.on('connection', function(socket) {
       gameState[data.room][opponent][row][col] ='D';
     }
 
-    let opponentBoardCopy = [...gameState[data.room][opponent]];
-    for (let i = 0; i < opponentBoardCopy.length; i++) {
-      for (let j = 0; j < opponentBoardCopy[i].length; j++) {
-        if (opponentBoardCopy[i][j] === 'B') {
-          opponentBoardCopy[i][j] = 'A';
-        }
+    let opponentBoard = gameState[data.room][opponent];
+    
+    let opponentBoardCopy = filterOpponentBoard(opponentBoard);
+    let shipCellsLeft = 0;
+    for (let i = 0; i < opponentBoard.length; i++) {
+      for (let j = 0; j < opponentBoard[i].length; j++) {
+        if (opponentBoard[i][j] === 'B') {
+          shipCellsLeft++;
+        } 
       }
     }
-    socket.broadcast.to(data.room).emit('turnPlayedOpponent', {
-      board: opponentBoardCopy
-    });
-    
-    console.log(opponentBoardCopy, gameState[data.room][opponent])
-    socket.emit('turnPlayedPlayer', {
-      board: gameState[data.room][opponent]
-    })
+    if (shipCellsLeft === 0) {
+      io.in(data.room).emit('winner', {player});
+    } else {
+      //send original board to opponent after turn
+      socket.broadcast.to(data.room).emit('turnPlayedOpponent', {
+        board: gameState[data.room][opponent]
+      });
+      //send filtered board to player after turn
+      socket.emit('turnPlayedPlayer', {
+        board: opponentBoardCopy
+      })
+    }
   });
 
 });
 
-
+const filterOpponentBoard = (opponentBoard) => {
+  let opponentBoardCopy = [];
+  for (let i = 0; i < opponentBoard.length; i++) {
+    let temp = [];
+    for (let j = 0; j < opponentBoard[i].length; j++) {
+      if (opponentBoard[i][j] === 'B') {
+        temp.push('A');
+      } else {
+        temp.push(opponentBoard[i][j]);
+      }
+    }
+    opponentBoardCopy.push(temp);
+  }
+  return opponentBoardCopy;
+}
