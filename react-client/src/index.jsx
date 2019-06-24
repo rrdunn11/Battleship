@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import PlayerBoard from './components/PlayerBoard.jsx';
 import OpponentBoard from './components/OpponentBoard.jsx';
 import StartingScreen from './components/StartingScreen.jsx';
+import Chatbox from './components/Chatbox.jsx';
 const socket = io.connect(window.location.origin);
 
 class App extends React.Component {
@@ -41,13 +42,17 @@ class App extends React.Component {
         set: 1
       }
     ],
-    gameStatus: 0
+    gameStatus: 0,
+    message: "",
+    chatOutput: [],
     }
     this.setShipAtApp = this.setShipAtApp.bind(this);
     this.setPlayerShips = this.setPlayerShips.bind(this);
     this.onNewGameClick = this.onNewGameClick.bind(this);
     this.onJoinGameClick = this.onJoinGameClick.bind(this);
     this.targetOpponent = this.targetOpponent.bind(this);
+    this.chatMessageChange = this.chatMessageChange.bind(this);
+    this.sendChatMessage = this.sendChatMessage.bind(this);
   }
 
   componentDidMount() {
@@ -109,6 +114,18 @@ class App extends React.Component {
       if (data.winner) {
         alert(`Your opponent is the winner!`);
       }
+    });
+
+    socket.on('receiveChat', (data) => {
+      let chatOutputCopy =[];
+      for (let i = 0; i < this.state.chatOutput.length; i++) {
+        chatOutputCopy[i] = this.state.chatOutput[i].slice()
+      }
+      chatOutputCopy.push([data.username, data.message]);
+      this.setState({
+        chatOutput: chatOutputCopy,
+        message: ''
+      });
     });
 
     socket.on('err', (data) => {
@@ -224,6 +241,23 @@ class App extends React.Component {
     }
   }
 
+  chatMessageChange(e) {
+    e.preventDefault();
+    this.setState({
+      message: e.target.value
+    });
+  }
+
+  sendChatMessage(e) {
+    e.preventDefault();
+    let message = this.state.message;
+    let username = this.state.username;
+    socket.emit('sendChat', {
+      message,
+      username
+    });
+  }
+
   render () {
     let display;
     if (this.state.gameStatus === 0) {
@@ -235,38 +269,58 @@ class App extends React.Component {
       )
     } else if (this.state.gameStatus === 1) {
       display = (
-        <div>
-          <h2>Your Board</h2>
-          <button onClick={(e) => this.setPlayerShips(e)} >Set board!</button>
-          <PlayerBoard 
-            playerBoard={this.state.playerBoard}
-            setShipAtApp={this.setShipAtApp}
-            ships={this.state.ships}
-            gameStatus={this.state.gameStatus}
-          />
+        <div id="battleship">
+          <div>
+            <h2>Your Board</h2>
+            <button onClick={(e) => this.setPlayerShips(e)} >Set board!</button>
+            <PlayerBoard 
+              playerBoard={this.state.playerBoard}
+              setShipAtApp={this.setShipAtApp}
+              ships={this.state.ships}
+              gameStatus={this.state.gameStatus}
+            />
+          </div>
+          <div>
+            <Chatbox 
+            sendChatMessage={this.sendChatMessage}
+            chatMessageChange={this.chatMessageChange}
+            chatOutput={this.state.chatOutput}
+            message={this.state.message}
+            />
+          </div>
         </div>
       ) 
     } else if (this.state.gameStatus === 2) {
       display = (
-        <div>
-          <h2>Your Board</h2>
-          <PlayerBoard 
-            playerBoard={this.state.playerBoard}
-            setShipAtApp={this.setShipAtApp}
-            ships={this.state.ships}
-            gameStatus={this.state.gameStatus}
-          />
-          <h2> Your Opponent's Board</h2>
-          <OpponentBoard 
-            opponentBoard={this.state.opponentBoard}
-            targetOpponent={this.targetOpponent}
-          />
+        <div id="battleship">
+          <div>
+            <h2>Your Board</h2>
+            <PlayerBoard 
+              playerBoard={this.state.playerBoard}
+              setShipAtApp={this.setShipAtApp}
+              ships={this.state.ships}
+              gameStatus={this.state.gameStatus}
+            />
+            <h2> Your Opponent's Board</h2>
+            <OpponentBoard 
+              opponentBoard={this.state.opponentBoard}
+              targetOpponent={this.targetOpponent}
+            />
+          </div>
+          <div>
+            <Chatbox 
+            sendChatMessage={this.sendChatMessage}
+            chatMessageChange={this.chatMessageChange}
+            chatOutput={this.state.chatOutput}
+            message={this.state.message}
+            />
+          </div>
         </div>
       )
     } 
 
     return (
-      <div>
+      <div id="app">
         <h1>Battleship!</h1>
         <div>Username: {this.state.username}</div>
         <div>Player: {this.state.player}</div>

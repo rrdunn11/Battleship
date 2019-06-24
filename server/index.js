@@ -30,7 +30,7 @@ io.on('connection', function(socket) {
   socket.on('createGame', function(data) {
     rooms++;
     socket.join('room-' + rooms);
-    gameState['room-' + rooms] = [];
+    gameState['room-' + rooms] = {};
     gameState['room-' + rooms]['P1'] = [
       ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
       ['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'],
@@ -89,7 +89,7 @@ io.on('connection', function(socket) {
     });
     socket.broadcast.to(data.room).emit('setOpponentBoard', {
       board: opponentBoardCopy
-    })
+    });
   });
 
   //data consists of row, col, player, and room
@@ -136,6 +136,11 @@ io.on('connection', function(socket) {
     });
   });
 
+  //data consists of username and message
+  socket.on('sendChat', (data) => {
+    let room = Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
+    io.in(room).emit('receiveChat', data);
+  });
 });
 
 //Remove ships before sending board to the enemy

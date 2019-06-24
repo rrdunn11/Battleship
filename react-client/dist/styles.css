@@ -1,3 +1,9 @@
+#battleship {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .board {
   display: flex;
   flex-direction: column;
@@ -35,10 +41,6 @@
   border: solid 1px black;
 }
 
-.set1 {
-
-}
-
 .set0 {
   text-decoration: line-through;
 }
@@ -61,4 +63,20 @@
 
 .selectedShiptrue {
   font-weight: bold;
+}
+
+#chatbox {
+  border: solid black 2px;
+}
+
+#chatOutput {
+  height: 300px;
+  width: 300px;
+  overflow: auto;
+  border: solid black 1px;
+}
+
+#message {
+  height: 50px;
+  width: 296px;
 }
