@@ -272,7 +272,6 @@ class App extends React.Component {
             <div>Username: {this.state.username}</div>
             <div>Player: {this.state.player}</div>
             <div>Room: {this.state.roomID}</div>
-            <div>Turn: {""+this.state.turn}</div>
             <h2>Your Board</h2>
             <button onClick={(e) => this.setPlayerShips(e)} >Set board!</button>
             <PlayerBoard 
@@ -280,9 +279,10 @@ class App extends React.Component {
               setShipAtApp={this.setShipAtApp}
               ships={this.state.ships}
               gameStatus={this.state.gameStatus}
-            />
+              />
             {this.state.gameStatus === 2 ? 
             (<div>
+              <h3>Turn: {""+this.state.turn}</h3>
               <h2> Your Opponent's Board</h2>
               <OpponentBoard 
                 opponentBoard={this.state.opponentBoard}

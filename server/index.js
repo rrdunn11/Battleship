@@ -8,9 +8,10 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/../react-client/dist'));
+const PORT = 80;
 
-const server = app.listen(3000, function() {
-  console.log('listening on port 3000!');
+const server = app.listen(PORT, function() {
+  console.log(`listening on port ${PORT}!`);
 });
 
 const io = socket(server);
