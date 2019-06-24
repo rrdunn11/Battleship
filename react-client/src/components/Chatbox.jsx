@@ -12,11 +12,13 @@ class Chatbox extends React.Component {
         <h2>Chatbox</h2>
         <form onSubmit={(e) => this.props.sendChatMessage(e)}>
           <div id="chatOutput" >
-            {this.props.chatOutput.map((chat, idx) => {
-              return (
-                <Chat chat={chat} key={`chat ${idx}`}/>
-              )
-            })}
+            <div>
+              {this.props.chatOutput.map((chat, idx) => {
+                return (
+                  <Chat chat={chat} key={`chat ${idx}`}/>
+                )
+              })}
+            </div>
           </div> 
           <input 
             onChange={(e) => this.props.chatMessageChange(e)} 
