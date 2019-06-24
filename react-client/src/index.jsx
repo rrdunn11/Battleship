@@ -103,6 +103,7 @@ class App extends React.Component {
       });
       if (data.winner) {
         alert(`You are the winner!`);
+        socket.emit('endGame');
       }
     });
 
@@ -267,10 +268,14 @@ class App extends React.Component {
           onJoinGameClick={this.onJoinGameClick}
         />
       )
-    } else if (this.state.gameStatus === 1) {
+    } else if (this.state.gameStatus === 1 || this.state.gameStatus === 2) {
       display = (
         <div id="battleship">
           <div>
+            <div>Username: {this.state.username}</div>
+            <div>Player: {this.state.player}</div>
+            <div>Room: {this.state.roomID}</div>
+            <div>Turn: {""+this.state.turn}</div>
             <h2>Your Board</h2>
             <button onClick={(e) => this.setPlayerShips(e)} >Set board!</button>
             <PlayerBoard 
@@ -279,6 +284,14 @@ class App extends React.Component {
               ships={this.state.ships}
               gameStatus={this.state.gameStatus}
             />
+            {this.state.gameStatus === 2 ? 
+            (<div>
+              <h2> Your Opponent's Board</h2>
+              <OpponentBoard 
+                opponentBoard={this.state.opponentBoard}
+                targetOpponent={this.targetOpponent}
+              />
+            </div>) : null}
           </div>
           <div>
             <Chatbox 
@@ -290,42 +303,11 @@ class App extends React.Component {
           </div>
         </div>
       ) 
-    } else if (this.state.gameStatus === 2) {
-      display = (
-        <div id="battleship">
-          <div>
-            <h2>Your Board</h2>
-            <PlayerBoard 
-              playerBoard={this.state.playerBoard}
-              setShipAtApp={this.setShipAtApp}
-              ships={this.state.ships}
-              gameStatus={this.state.gameStatus}
-            />
-            <h2> Your Opponent's Board</h2>
-            <OpponentBoard 
-              opponentBoard={this.state.opponentBoard}
-              targetOpponent={this.targetOpponent}
-            />
-          </div>
-          <div>
-            <Chatbox 
-            sendChatMessage={this.sendChatMessage}
-            chatMessageChange={this.chatMessageChange}
-            chatOutput={this.state.chatOutput}
-            message={this.state.message}
-            />
-          </div>
-        </div>
-      )
     } 
-
+    
     return (
       <div id="app">
         <h1>Battleship!</h1>
-        <div>Username: {this.state.username}</div>
-        <div>Player: {this.state.player}</div>
-        <div>Room: {this.state.roomID}</div>
-        <div>Turn: {""+this.state.turn}</div>
         {display}
       </div>
     )

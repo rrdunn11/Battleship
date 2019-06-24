@@ -8,17 +8,19 @@ class StartingScreen extends React.Component {
   render () {
     return (
       <div>
-        <form action="">
-          <h3>Create a new game!</h3>
+        <form onSubmit={(e) => this.props.onNewGameClick(e)}>
+          <h3>Create a new game:</h3>
           <div>Username:</div>
           <input type="text" id="usernameP1" placeholder="Name"/>
-          <button onClick={(e) => this.props.onNewGameClick(e)}>Create game!</button>
-          <h3>Join an existing game!</h3>
+          <button type="submit" >Create game!</button>
+        </form>
+        <form onSubmit={(e) => this.props.onJoinGameClick(e)}>
+          <h3>Join an existing game:</h3>
           <div>Username:</div>
           <input type="text" id="usernameP2" placeholder="Name"/>
           <div>RoomID:</div>
           <input type="text" id="roomID" placeholder="Room ID"/>
-          <button onClick={(e) => this.props.onJoinGameClick(e)}>Join game!</button>
+          <button type="submit">Join game!</button>
         </form>
       </div>
     )

@@ -82,18 +82,20 @@ io.on('connection', function(socket) {
   //Save boards to server memory
   //data consists of player's board, role, and room
   socket.on('setShips', (data) => {
-    gameState[data.room][data.player] = data.playerBoard;
-    let opponentBoardCopy = filterOpponentBoard(gameState[data.room][data.player]);
+    let room = Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
+    gameState[room][data.player] = data.playerBoard;
+    let opponentBoardCopy = filterOpponentBoard(gameState[room][data.player]);
     socket.emit('setPlayerBoard', {
-      board: gameState[data.room][data.player]
+      board: gameState[room][data.player]
     });
-    socket.broadcast.to(data.room).emit('setOpponentBoard', {
+    socket.broadcast.to(room).emit('setOpponentBoard', {
       board: opponentBoardCopy
     });
   });
 
   //data consists of row, col, player, and room
   socket.on('playTurn', (data) => {
+    let room = Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
     let row = data.row;
     let col = data.col;
     let player = data.player;
@@ -105,13 +107,13 @@ io.on('connection', function(socket) {
     }
 
     //Determine whether a ship has been hit
-    if (gameState[data.room][opponent][row][col].length > 1) {
-      gameState[data.room][opponent][row][col] += ' hit';
+    if (gameState[room][opponent][row][col].length > 1) {
+      gameState[room][opponent][row][col] += ' hit';
     } else {
-      gameState[data.room][opponent][row][col] ='D';
+      gameState[room][opponent][row][col] ='D';
     }
 
-    let opponentBoard = gameState[data.room][opponent];
+    let opponentBoard = gameState[room][opponent];
     
     let opponentBoardCopy = filterOpponentBoard(opponentBoard);
     //check number of ships left; if 0, then we can declare victory!
@@ -125,8 +127,8 @@ io.on('connection', function(socket) {
     }
 
     //send original board to opponent after turn
-    socket.broadcast.to(data.room).emit('turnPlayedOpponent', {
-      board: gameState[data.room][opponent],
+    socket.broadcast.to(room).emit('turnPlayedOpponent', {
+      board: gameState[room][opponent],
       winner: shipCellsLeft === 0
     });
     //send filtered board to player after turn
@@ -134,6 +136,12 @@ io.on('connection', function(socket) {
       board: opponentBoardCopy,
       winner: shipCellsLeft === 0
     });
+  });
+
+  //delete data from the gameState after game has ended
+  socket.on('endGame', () => {
+    let room = Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
+    delete gameState[room];
   });
 
   //data consists of username and message
