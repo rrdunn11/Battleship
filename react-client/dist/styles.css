@@ -53,6 +53,10 @@
   background-color: grey;
 }
 
+.Carrier, .Submarine, .Battleship, .Cruiser, .Destroyer {
+  background-color: lightgrey;
+}
+
 .hit {
   background-color: red;
 }
@@ -67,6 +71,8 @@
 
 #chatbox {
   border: solid black 2px;
+  position: sticky;
+  top: 0;
 }
 
 #chatOutput {

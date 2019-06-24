@@ -216,15 +216,15 @@ class App extends React.Component {
         shipsNotSet++;
       }
     }
-    // if (shipsNotSet === 0) {
+    if (shipsNotSet === 0) {
       socket.emit('setShips', {
         player: this.state.player, 
         room: this.state.roomID, 
         playerBoard: this.state.playerBoard
       });
-    // } else {
-    //   alert('Please set all ships!');
-    // }
+    } else {
+      alert('Please set all ships!');
+    }
   }
 
   targetOpponent(e, row, col) {
