@@ -22,6 +22,8 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     console.log('User disconnected');
+    let room = Object.keys(socket.rooms).filter(item => item!=socket.id)[0];
+    delete gameState[room];
   });
   
   //increment room count, set up and join room, create game state for P1

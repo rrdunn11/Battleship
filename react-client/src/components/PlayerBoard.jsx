@@ -46,15 +46,17 @@ class PlayerBoard extends React.Component {
             onPlayerShipSet={this.onPlayerShipSet}
             gameStatus={this.props.gameStatus}
           />
-          <div id="pieces">
-            <Ships 
-              onPlayerShipClick={this.onPlayerShipClick}
-              changeShipDirection={this.changeShipDirection}
-              ships={this.props.ships}
-              selectedShip={this.state.selectedShip}
-              shipHorizontal={this.state.shipHorizontal}
-            />
-          </div>
+
+          {this.props.gameStatus === 1 ? 
+            <div id="pieces">
+              <Ships 
+                onPlayerShipClick={this.onPlayerShipClick}
+                changeShipDirection={this.changeShipDirection}
+                ships={this.props.ships}
+                selectedShip={this.state.selectedShip}
+                shipHorizontal={this.state.shipHorizontal}
+              />
+            </div> : null}
         </div>
 
     )

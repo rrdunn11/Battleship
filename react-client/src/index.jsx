@@ -69,7 +69,7 @@ class App extends React.Component {
     });
   
     socket.on('P1', (data) => {
-      console.log(data);
+      alert(data.message);
     })
   
     socket.on('P2', (data) => {
@@ -145,8 +145,6 @@ class App extends React.Component {
     }
   }
 
-  
-
   onJoinGameClick(e) {
     e.preventDefault();
     let username = document.getElementById("usernameP2").value;
@@ -192,7 +190,7 @@ class App extends React.Component {
         return false;
       }
       for (let i = 0; i < ship.length; i++) {
-        if (this.state.playerBoard[rowNumb][colNumb+i] === 'B') {
+        if (this.state.playerBoard[rowNumb][colNumb+i].length > 1) {
           return false;
         }
       }
@@ -201,7 +199,7 @@ class App extends React.Component {
         return false;
       }
       for (let i = 0; i < ship.length; i++) {
-        if (this.state.playerBoard[rowNumb+i][colNumb] === 'B') {
+        if (this.state.playerBoard[rowNumb+i][colNumb].length > 1) {
           return false;
         }
       }
@@ -268,7 +266,7 @@ class App extends React.Component {
           onJoinGameClick={this.onJoinGameClick}
         />
       )
-    } else if (this.state.gameStatus === 1 || this.state.gameStatus === 2) {
+    } else {
       display = (
         <div id="battleship">
           <div>
@@ -304,10 +302,10 @@ class App extends React.Component {
         </div>
       ) 
     } 
-    
+
     return (
       <div id="app">
-        <h1>Battleship!</h1>
+        <h1>Battleboat!</h1>
         {display}
       </div>
     )

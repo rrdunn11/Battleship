@@ -13,7 +13,7 @@ const Ships = ({ships, onPlayerShipClick, changeShipDirection, selectedShip, shi
       />)
     })}
     <button onClick={(e) => changeShipDirection(e)}>Change ship direction</button>
-    <div>Ship will be: {shipHorizontal === true ? 'horizontal' : 'vertical'}</div>
+    <div>Ship will be {shipHorizontal === true ? 'horizontal' : 'vertical'}.</div>
   </div>
 )
 
