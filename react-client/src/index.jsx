@@ -57,7 +57,6 @@ class App extends React.Component {
 
   componentDidMount() {
     socket.on('newGame', (data) => {
-      console.log(data);
       this.setState({
         username: data.username,
         player: 'P1',
